@@ -22,6 +22,7 @@ FusionEKF::FusionEKF() {
     
     // state vector
     ekf_.x_ = VectorXd(4);
+    ekf_.x_ << 1, 1, 1, 1;
     
     // state covariance matrix
     ekf_.P_ = MatrixXd(4,4);
@@ -88,30 +89,47 @@ FusionEKF::FusionEKF() {
 FusionEKF::~FusionEKF() {}
 
 void FusionEKF::ProcessMeasurement(const MeasurementPackage &measurement_pack) {
+    
+    static long long lastTimestamp = 0;
+    
+    long long deltaTime = (measurement_pack.timestamp_ - lastTimestamp)/pow(10,6);
+    
+    lastTimestamp = measurement_pack.timestamp_;
+    
+    
     /**
      * Initialization
      */
     if (!is_initialized_) {
-        /**
-         * TODO: Initialize the state ekf_.x_ with the first measurement.
-         * TODO: Create the covariance matrix.
-         * You'll need to convert radar from polar to cartesian coordinates.
-         */
+        
         
         // first measurement
-        cout << "EKF: " << endl;
-        ekf_.x_ = VectorXd(4);
-        ekf_.x_ << 1, 1, 1, 1;
         
         if (measurement_pack.sensor_type_ == MeasurementPackage::RADAR) {
-            // TODO: Convert radar from polar to cartesian coordinates
-            //         and initialize state.
+            
+            float rho = measurement_pack.raw_measurements_[0];
+            float theta = measurement_pack.raw_measurements_[1];
+            float dRho = measurement_pack.raw_measurements_[2];
+            
+            ekf_.x_ <<
+            (cos(theta) * rho)  ,
+            (sin(theta) * rho)  ,
+            (cos(theta) * dRho) ,
+            (sin(theta) * dRho) ;
             
         }
         else if (measurement_pack.sensor_type_ == MeasurementPackage::LASER) {
-            // TODO: Initialize state.
+            
+            float x = measurement_pack.raw_measurements_[0];
+            float y = measurement_pack.raw_measurements_[1];
+            
+            ekf_.x_ << x , y , 0 , 0 ;
             
         }
+        
+        
+        ekf_.P_ =  ekf_.F_ * ekf_.P_ * ekf_.F_.transpose();
+        
         
         // done initializing, no need to predict or update
         is_initialized_ = true;
