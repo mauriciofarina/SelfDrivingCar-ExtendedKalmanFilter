@@ -9,8 +9,9 @@
 #include "measurement_package.h"
 #include "tools.h"
 
-class FusionEKF {
- public:
+class FusionEKF
+{
+public:
   /**
    * Constructor.
    */
@@ -31,12 +32,16 @@ class FusionEKF {
    */
   KalmanFilter ekf_;
 
- private:
+private:
   // check whether the tracking toolbox was initialized or not (first measurement)
   bool is_initialized_;
 
   // previous timestamp
   long long previous_timestamp_;
+
+  //set the acceleration noise components
+  float noise_ax;
+  float noise_ay;
 
   // tool object used to compute Jacobian and RMSE
   Tools tools;
