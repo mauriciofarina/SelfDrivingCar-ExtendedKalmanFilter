@@ -1,3 +1,7 @@
+# Project Info
+
+For this project, no writeup was necessary. In order to run this application, the documentation provided by Udacity has all the necessary information.
+
 # Extended Kalman Filter Project Starter Code
 Self-Driving Car Engineer Nanodegree Program
 
